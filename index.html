@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MolCraft — Chem & Mole Workbench</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="brand">
+            <span class="logo-badge">MC</span>
+            <div>
+                <h1>MolCraft</h1>
+                <p class="subtitle">Chem &amp; Mole Workbench</p>
+            </div>
+        </div>
+        <button id="theme-toggle" class="btn-secondary" aria-label="Toggle color theme">Dark / Light</button>
+    </header>
+
+    <nav class="tabs" role="tablist">
+        <button class="tab-btn active" data-tab="balancer" role="tab">1. Equation Balancer</button>
+        <button class="tab-btn" data-tab="mole-lab" role="tab">2. Mole &amp; Mass Lab</button>
+        <button class="tab-btn" data-tab="periodic-table" role="tab">3. Periodic Table</button>
+        <button class="tab-btn" data-tab="quiz-mode" role="tab">4. Quiz Mode</button>
+    </nav>
+
+    <main class="container">
+        <div id="error-banner" class="error-banner hidden" role="alert"></div>
+
+        <!-- TAB 1: EQUATION BALANCER -->
+        <section id="tab-balancer" class="tab-panel active">
+            <div class="card">
+                <div class="input-group">
+                    <input type="text" id="eq-input" placeholder="e.g., C3H8 + O2 -> CO2 + H2O" aria-label="Chemical equation">
+                    <button id="balance-btn" class="btn-primary">Balance Equation</button>
+                </div>
+
+                <div class="presets-bar">
+                    <span class="label">Presets:</span>
+                    <button class="chip" data-eq="C3H8 + O2 -> CO2 + H2O">Propane Combustion</button>
+                    <button class="chip" data-eq="CO2 + H2O -> C6H12O6 + O2">Photosynthesis</button>
+                    <button class="chip" data-eq="Fe + O2 -> Fe2O3">Iron Rusting</button>
+                    <button class="chip" data-eq="N2 + H2 -> NH3">Haber Process</button>
+                    <button class="chip" data-eq="Fe2O3 + Al -> Al2O3 + Fe">Thermite</button>
+                    <button class="chip" data-eq="Ca(OH)2 + H3PO4 -> Ca3(PO4)2 + H2O">Double Replacement</button>
+                </div>
+
+                <div id="balance-result" class="result-box hidden">
+                    <div class="result-header">
+                        <span class="badge-success">✓ BALANCED</span>
+                        <span id="reaction-type" class="badge-info">Type: —</span>
+                        <button id="copy-eq-btn" class="btn-small">Copy</button>
+                    </div>
+                    <div id="balanced-display" class="balanced-formula"></div>
+
+                    <h3>Atom Conservation Check</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Element</th>
+                                <th>Reactant Atoms</th>
+                                <th>Product Atoms</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="conservation-body"></tbody>
+                    </table>
+                    <p id="mass-conservation-summary" class="summary-note"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: MOLE & MASS LAB -->
+        <section id="tab-mole-lab" class="tab-panel hidden">
+            <div class="card">
+                <div class="input-group">
+                    <input type="text" id="formula-input" placeholder="e.g., C6H12O6 or CuSO4.5H2O" aria-label="Chemical formula">
+                    <button id="calc-mole-btn" class="btn-primary">Analyze Formula</button>
+                </div>
+
+                <div id="mole-result" class="result-box hidden">
+                    <div class="molar-mass-header">
+                        <span>Standard Molar Mass:</span>
+                        <strong id="molar-mass-val">0.000 g/mol</strong>
+                    </div>
+
+                    <h3>Mass Percent Composition</h3>
+                    <div id="mass-percent-bar" class="stacked-bar"></div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Element</th>
+                                <th>Atoms</th>
+                                <th>Mass Contribution (g/mol)</th>
+                                <th>Mass %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mass-percent-body"></tbody>
+                    </table>
+
+                    <h3>Bidirectional Mole Converter (STP: 0 °C, 1 atm)</h3>
+                    <div class="converter-grid">
+                        <label>Mass (g)
+                            <input type="number" id="conv-grams" step="any" min="0" placeholder="0.0000">
+                        </label>
+                        <label>Moles (mol)
+                            <input type="number" id="conv-moles" step="any" min="0" placeholder="0.0000">
+                        </label>
+                        <label>Particles / Molecules (N<sub>A</sub>)
+                            <input type="number" id="conv-particles" step="any" min="0" placeholder="0.000e+0">
+                        </label>
+                        <label>Ideal Gas Volume at STP (L)
+                            <input type="number" id="conv-liters" step="any" min="0" placeholder="0.0000">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: PERIODIC TABLE -->
+        <section id="tab-periodic-table" class="tab-panel hidden">
+            <div class="card">
+                <div class="pt-controls">
+                    <input type="text" id="pt-search" placeholder="Search symbol, name, or atomic number...">
+                    <select id="pt-category-filter">
+                        <option value="all">All Categories</option>
+                        <option value="nonmetal">Nonmetals</option>
+                        <option value="noble-gas">Noble Gases</option>
+                        <option value="alkali-metal">Alkali Metals</option>
+                        <option value="alkaline-earth">Alkaline Earth Metals</option>
+                        <option value="transition-metal">Transition Metals</option>
+                        <option value="post-transition">Post-Transition Metals</option>
+                        <option value="metalloid">Metalloids</option>
+                        <option value="halogen">Halogens</option>
+                        <option value="lanthanide">Lanthanides</option>
+                        <option value="actinide">Actinides</option>
+                    </select>
+                </div>
+
+                <div id="element-inspector" class="inspector-card hidden"></div>
+                <div id="periodic-grid" class="periodic-grid"></div>
+            </div>
+        </section>
+
+        <!-- TAB 4: QUIZ MODE -->
+        <section id="tab-quiz-mode" class="tab-panel hidden">
+            <div class="card">
+                <div class="quiz-header">
+                    <h2>Balance Practice Quiz</h2>
+                    <span id="quiz-streak" class="badge-info">Streak: 0</span>
+                </div>
+                <div id="quiz-equation" class="quiz-prompt"></div>
+                <div class="quiz-actions">
+                    <button id="check-quiz-btn" class="btn-primary">Check Answer</button>
+                    <button id="next-quiz-btn" class="btn-secondary">Next Equation</button>
+                </div>
+                <p id="quiz-feedback" class="summary-note"></p>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
